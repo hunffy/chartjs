@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--/chartjs/src/main/webapp/db/bar1.html  -->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>게시글 작성자별 건수(막대그래프)</title>
+<script type="text/javascript" 
+  src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+  <script type="text/javascript" src= 
+"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+</script>
+<style>
+  /* 도화지 : 그림을 그려주는 영역 */
+  canvas { /* 글씨등이 선택 되지 않도록 설정 */
+    -moz-user-select : none; /* 파이어폭스 브라우저 */
+    -webkit-user-select : none; /* 사파리 브라우저 */
+    -ms-user-select : none;   /* IE 브라우저 */
+    user-select : none;       /* 표준 브라우저 */
+  }
+</style>
+</head>
+<body>
+<div id="container" style="width:95%;">
+  <canvas id="canvas"></canvas>  <!-- chartjs에 의해 그래프 출력 영역  -->
+</div>
+<script type="text/javascript">
+	let randomColorFactor = function() {
+		return Math.round(Math.random() * 255); //0~255 사이의 임의의 값을 전달(rgb색상이 0~255사이라서)
+	}
+	//rgba(red,green,blue,opacity(투명도))
+	//	투명도: 1(불투명), 0(투명)
+	let randomColor = function(opacity) { //실행마다 다른색상이 표시됨.
+		return "rgba(" + randomColorFactor() + ","
+				+ randomColorFactor() + ","
+				+ randomColorFactor() + ","
+				+ (opacity || '.3')+ ")";
+				
+	};
+	$(function(){
+		$.ajax({
+			url:"/chartjs/select",
+			success:function(data){
+				chart_rtn(data);
+			}
+		})
+	})
+	function chart_rtn(data) {
+		console.log(data)
+		let ctx = document.getElementById("canvas");
+		let json = JSON.parse(data);
+		
+		//{"datas":[...], "writers":[...]}
+		let datas = json.datas; //배열의형태. 건수값 목록
+		let writers = json.writers; //배열의형태. 글쓴이 목록
+		let colors = []
+		$.each(datas,function(i,item){
+			colors[i] = randomColor(1)
+		})
+		let barCharData = {
+			labels : writers, //x축의 값
+			datasets:[{
+				label : "게시판작성건수",
+				data:datas,
+				backgroundColor:colors
+			}
+			]
+		}
+		//그래프 작성
+		//ctx : 그래프 작성 영역. canvas 태그 영역
+		new Chart(ctx,{
+			type:'bar', //막대 그래프로 작성
+			data : barCharData,
+			options: {
+				responsive : true,
+				legend: {position: 'top'},
+				title :{display : true, text: '게시판 작성 건수'}
+			}
+		})
+	}
+</script>
+</body>
+</html>

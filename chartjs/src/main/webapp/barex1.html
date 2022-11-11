@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--  /chartjs1/src/main/webapp/barex1.html -->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>막대그래프 그리기</title>
+<script type="text/javascript" 
+  src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<style>
+  /* 도화지 : 그림을 그려주는 영역 */
+  canvas { /* 글씨등이 선택 되지 않도록 설정 */
+    -moz-user-select : none; /* 파이어폭스 브라우저 */
+    -webkit-user-select : none; /* 사파리 브라우저 */
+    -ms-user-select : none;   /* IE 브라우저 */
+    user-select : none;       /* 표준 브라우저 */
+  }
+</style>  
+</head>
+<body>
+
+<div id="container" style="width:95%;">
+  <canvas id="canvas"></canvas>  <!-- chartjs에 의해 그래프 출력 영역  -->
+</div>
+
+<script type="text/javascript">
+   // 배열로 설정 
+   const MONTHS = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"]
+   
+   //막대그래프에 표시한 데이터 객체 
+   const barChartData = {
+		   labels : MONTHS,  //x축데이터 
+		   datasets : [    //데이터 영역. 
+			   {           //막대 그래프 한개
+				  label : '영업부실적',   //막대그래프 설명. 범례에 표시됨 
+				  backgroundColor :"#FF90FF",  //막대그래프색상 설정
+				  borderColor : "#FF90FF",     //막대 테두리 색상 설정 
+				  borderWidth : 1,             //막대 테두리 굵기 설정 
+				  data:[10,15,25,55,-25,35,65,55,28,43,68,30] //막대의 값 
+			   },
+			   {           //막대 그래프 한개
+				  label : '총무부실적',
+				  backgroundColor :"#0000FF",
+				  borderColor : "#0000FF",
+				  borderWidth : 1,
+				  data:[1,5,5,15,-5,15,25,5,38,23,58,20]
+			   }
+		   ]
+   }
+   //화면 준비 완료.
+   window.onload =function(){
+	   //document.getElementById("canvas") : id태그가 캔버스인 태그를 가져와
+	   // .getContext("2d") : "2d"의 형태로 만드럭야.
+	   let ctx = document.getElementById("canvas").getContext("2d") //그래프 출력 영역 
+	   //막대 그래프 출력 
+	   new Chart(ctx,{ //ctx영역에 차트를그리기.
+  		 type : 'bar', //막대그래프로 표시 
+  		 data : barChartData, //막대그래프로 출력될 데이터 객체 
+  		 options : {
+  			 responsive : true,     //반응형 웹형태로
+  			 //top,left,right,bottom
+  			 legend : {position : 'top'}, //범례의 위치 
+  			 title : { display : true,    //제목출력 
+  				       text : '막대 그래프 연습'  //제목 내용   
+  				      } 
+  		 }
+  	 })
+   }	   
+</script>
+</body>
+</html>
