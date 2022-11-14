@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!-- /chartjs/src/main/webapp/db/line1.html -->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>선그래프 작성하기 </title>
+<script type="text/javascript" 
+  src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script type="text/javascript" src= 
+"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+</script>
+<style>
+  /* 도화지 : 그림을 그려주는 영역 */
+  canvas { /* 글씨등이 선택 되지 않도록 설정 */
+    -moz-user-select : none; /* 파이어폭스 브라우저 */
+    -webkit-user-select : none; /* 사파리 브라우저 */
+    -ms-user-select : none;   /* IE 브라우저 */
+    user-select : none;       /* 표준 브라우저 */
+  }
+</style>  
+</head>
+<body>
+<div id="container" style="width:95%;">
+  <canvas id="canvas"></canvas>
+</div>
+<script type="text/javascript">
+let randomColorFactor = function() {
+	   return Math.round(Math.random() * 255);
+}
+let randomColor = function(opacity) {
+	   return "rgba(" + randomColorFactor() + ","
+			    + randomColorFactor() + ","
+			    + randomColorFactor() + ","
+			    + (opacity || '.3') + ")"; 
+};
+$(function(){
+	$.ajax({
+		url:"/chartjs/select",
+		success:function(data) {
+			chart_rtn(data);
+		}
+	})
+})
+function chart_rtn(data) {
+	let ctx=document.getElementById("canvas")
+	let json=JSON.parse(data);
+	let datas=json.datas
+	let writers = json.writers;
+	let colors = []
+	$.each(datas,function(i,item){
+		colors[i]=randomColor(1)
+	})
+	const lineChartData = {
+		labels:writers,
+		datasets:[{
+			fill:false,             //선하단의 영역 채우지 않기
+//			borderColor:"#FF90FF", //선의 색상. 
+			borderColor:colors,    //각지점의 색상을 달리 설정 
+			borderWidth:1,         //선의 두께
+			data:datas
+		}]
+	}
+	new Chart(ctx,{
+		type:'line',  //그래프의 종류
+		data:lineChartData,
+		options:{
+			response:true,
+			legend:{display:false},
+			title:{display:true,text:'게시판 작성자별 건수'},
+			scales :{
+				xAxes:[{
+					scaleLabel:{labelString:"작성자",display:true}
+				}],
+				yAxes:[{
+					scaleLabel:
+					{labelString:"게시판 등록 건수",display:true},
+					ticks: {beginAtZero:true}
+				 }]
+			}
+		}
+	})
+}
+</script>
+</body>
+</html>

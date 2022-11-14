@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<!--  /chartjs/src/main/webapp/db/bar1.html -->
+<!-- /chartjs/src/main/webapp/db/exam1.html
+  자유게시판 작성자중 가장많은 글을 작성한 7명의 데이터만 막대그래프로 출력하기
+-->
 <html>
 <head>
 <meta charset="UTF-8">
@@ -20,6 +22,10 @@
 </style>  
 </head>
 <body>
+<input type="button" value="공지시항" onclick="board(1)">
+<input type="button" value="자유게시판" onclick="board(2)" >
+<input type="button" value="QNA" onclick="board(3)">
+
 <div id="container" style="width:95%;">
   <canvas id="canvas"></canvas>  <!-- chartjs에 의해 그래프 출력 영역  -->
 </div>
@@ -37,13 +43,23 @@ let randomColor = function(opacity) { //실행마다 다른 색상이 표시됨.
 };
 $(function(){
 	$.ajax({
-		url:"/chartjs/select",
+		url:"/chartjs/exam1?id=2",
 		success:function(data){
 			chart_rtn(data);
 		}
 	})
 })
-			
+function board(id) {
+	let canvas = document.getElementById("canvas");
+//	canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+//	canvas.beginPath();
+	$.ajax({
+		url:"/chartjs/exam1?id="+id,
+		success:function(data){
+			chart_rtn(data);
+		}
+	})
+}			
 function chart_rtn(data) {
 	console.log(data);//{"writers":["9","이몽룡","10"], "datas":[1,1,1]}
 	let ctx = document.getElementById("canvas");
@@ -58,7 +74,7 @@ function chart_rtn(data) {
 	let barChartData = {
   	    labels: writers, //x축의 값
 		datasets:[{
-			lable :"게시판작성건수",
+			lable :json.title+" 작성건수",
 			data:datas, //y축의 값
 			backgroundColor:colors
 		}
@@ -73,7 +89,7 @@ function chart_rtn(data) {
   		 responsive : true,
   		 legend : { display: false, position : 'top'}, 
   		 title : { display : true,    
-  			       text : '게시판 작성 건수'   
+  			       text : json.title + ' 작성 건수'   
   			      } ,
 	     scales: {
   				xAxes: [{  display : true,
@@ -83,7 +99,7 @@ function chart_rtn(data) {
   				yAxes: [{
   			       scaleLabel:  {
   				           display : true,
-  				           labelString : "게시물 작성 건수"
+  				           labelString : json.title+" 작성 건수"
   			       },
   			       ticks: { beginAtZero: true   } //y축의 시작 값을 0으로 
   			     }]

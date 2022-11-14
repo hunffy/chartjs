@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!-- /chartjs/src/main/webapp/db/barline1.html  -->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>막대/선 그래프 작성</title>
+<script type="text/javascript" 
+  src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script type="text/javascript" src= 
+"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+</script>
+<style>
+  /* 도화지 : 그림을 그려주는 영역 */
+  canvas { /* 글씨등이 선택 되지 않도록 설정 */
+    -moz-user-select : none; /* 파이어폭스 브라우저 */
+    -webkit-user-select : none; /* 사파리 브라우저 */
+    -ms-user-select : none;   /* IE 브라우저 */
+    user-select : none;       /* 표준 브라우저 */
+  }
+</style> 
+</head>
+<body>
+<div id="container" style="width:95%">
+  <canvas id="canvas"></canvas>
+</div>
+<script type="text/javascript">
+ let randomColorFactor= function(){
+	 return Math.round(Math.random() * 255);
+ }
+ let randomColor = function(opacity) {
+	 return "rgba(" + randomColorFactor() + ","
+			 + randomColorFactor() +","
+			 + randomColorFactor() + ","
+			 + (opacity || ".3") + ")"
+ }
+ $(function(){
+	 $.ajax({
+	  url:"/chartjs/select",
+	  success:function(data){
+		  chart_rtn(data)
+	  }
+	 })
+ })
+ function chart_rtn(data) {
+	 console.log(data)
+	 let ctx = document.getElementById("canvas")
+	 let json = JSON.parse(data); //JSON 데이터로 변환 
+	 let datas = json.datas
+	 let writers = json.writers;
+	 let colors = []
+	 $.each(datas,function(i,item){
+		 colors[i]=randomColor(1)
+	 })
+	 console.log(colors)
+	 let chartData = {
+		 labels:writers,
+		 datasets:[
+			 { type:"line", //선그래프
+			   borderWidth:2,              //선의두께  
+			   borderColor:randomColor(1), //선색상
+			   fill:false, //선아래부분을 채우지 않음
+			   label:"건수",
+			   data:datas
+			 },
+			 {
+			   type:"bar",  //막대그래프
+			   label:"건수",
+			   backgroundColor:colors, //막대별로 다른 색상으로 설정 
+			   borderWidth:1,
+			   data:datas
+			 }
+		 ]
+	 }
+	 new Chart(ctx,{
+//		 type:'line',
+		 data:chartData,
+		 options:{
+			 responsive:true,
+			 title:{display:true,text:"게시판등록건수"},
+			 legend:{display:false},
+			 scales:{
+				 xAxes:[{display:true,
+				   scaleLabel:{display:true, labelString:"작성자"}}],
+				 yAxes:[{
+				   scaleLabel:{display:true,labelString:"작성건수"},
+				   ticks:{beginAtZero:true}
+				 }]
+			 }
+		 }
+	 })
+ }
+</script>
+</body>
+</html>
